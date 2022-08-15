@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import TileCard from '../../Components/TileCard';
 import {
     fetchData,
     dataSelector,
@@ -13,7 +14,7 @@ const UserInfo = () => {
     // const { users } = useSelector(x => x.users);
     const dispatch = useDispatch()
     const { data, searchedData, loading, hasErrors } = useSelector(dataSelector)
-    const [tileView, setTileView] = useState(false)
+    const [tileView, setTileView] = useState(true)
     const [text, setText] = useState('')
     const [searching, setSearching] = useState(false)
 
@@ -42,10 +43,19 @@ const UserInfo = () => {
                 ))}
             </div>
         )}
-        {!searching && data.length>0 && (
+        {!searching && data.length>0 && tileView &&(
             <div>
                 {data.map(item =>(
-                    <h1>{item.name.last}</h1>
+                    <TileCard data ={item.name.last}/>
+                    // <h1>{item.name.last}</h1>
+                ))}
+            </div>
+        )}
+        {!searching && data.length>0 && !tileView &&(
+            <div>
+                {data.map(item =>(
+                    <TileCard data ={item.name.last}/>
+                    // <h1>{item.name.last}</h1>
                 ))}
             </div>
         )}
