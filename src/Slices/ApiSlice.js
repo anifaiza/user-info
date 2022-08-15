@@ -8,23 +8,36 @@ const initialState = {
   }
 
   export const fetchData = createAsyncThunk("api/fechData", async () => {
-    const response = await fetch("https://randomuser.me/api/")
+    // let data;
+    const response = await fetch("https://randomuser.me/api/?results=50"
+    )
     const data = await response.json()
-    return data
+    return data.results
   })
 
   export const apiSlice = createSlice({
-    name: "sapcexData",
+    name: "UserData",
   initialState,
   reducers: {
     searchByName: (state, { payload }) => {
       if (payload !== "") {
-        state.searchedData = state.data.filter(i =>
-          i.rocket.rocket_name.toLowerCase().includes(payload)
-        )
+        // state.searchedData = state.data.filter()
       }
     }
-    }
+    },
+    extraReducers: {
+        [fetchData.pending]: state => {
+          state.loading = true
+        },
+        [fetchData.fulfilled]: (state,  {payload} ) => {
+          state.loading = false
+          state.data = state.data.concat(payload)
+        },
+        [fetchData.rejected]: state => {
+          state.loading = false
+          state.hasErrors = true
+        },
+      },
   })
 
   export const dataSelector = state => state.data

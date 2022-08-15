@@ -7,9 +7,12 @@ import {
     searchByName,
   } from "../../Slices/ApiSlice"
 
+//   import { userActions } from "../../store"
+
 const UserInfo = () => {
+    // const { users } = useSelector(x => x.users);
     const dispatch = useDispatch()
-    const { data, searchedData } = useSelector(dataSelector)
+    const { data, searchedData, loading, hasErrors } = useSelector(dataSelector)
     const [tileView, setTileView] = useState(false)
     const [text, setText] = useState('')
 
@@ -21,13 +24,20 @@ const UserInfo = () => {
     
     useEffect(() => {
         dispatch(fetchData())
-    }, [dispatch])
+    }, [])
 
-    console.log("hello")
+    
+    // useEffect(() => {
+    //     dispatch(userActions.getAll());
+    // }, []);
+
+   if(!loading){
+    console.log("data", data)
+   }
     return (
     <div>
         <h1>User List</h1>
-        <input type="text" onChange={(e)=>onTextChange(e)}/>
+        <input type="text" />
     </div>
     )
 }
