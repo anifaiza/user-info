@@ -15,29 +15,40 @@ const UserInfo = () => {
     const { data, searchedData, loading, hasErrors } = useSelector(dataSelector)
     const [tileView, setTileView] = useState(false)
     const [text, setText] = useState('')
+    const [searching, setSearching] = useState(false)
 
     const onTextChange = (e) => {
-        e.preventDefault();
-        setText(e);
-        dispatch(searchByName(text));
+        setText(e.target.value);
+        setSearching(true);
+        dispatch(searchByName(e.target.value, data));
     }
     
     useEffect(() => {
         dispatch(fetchData())
-    }, [])
-
-    
-    // useEffect(() => {
-    //     dispatch(userActions.getAll());
-    // }, []);
+    }, [dispatch])
 
    if(!loading){
     console.log("data", data)
+    console.log("searched", searchedData)
    }
     return (
     <div>
         <h1>User List</h1>
-        <input type="text" />
+        <input type="text" onChange={(e)=>{onTextChange(e)}}/>
+        {searching && searchedData.length>0 && (
+            <div>
+                {searchedData.map(item =>(
+                    <h1>{item.name.last}</h1>
+                ))}
+            </div>
+        )}
+        {!searching && data.length>0 && (
+            <div>
+                {data.map(item =>(
+                    <h1>{item.name.last}</h1>
+                ))}
+            </div>
+        )}
     </div>
     )
 }

@@ -21,7 +21,10 @@ const initialState = {
   reducers: {
     searchByName: (state, { payload }) => {
       if (payload !== "") {
-        // state.searchedData = state.data.filter()
+        state.searchedData = state.data.filter(item=>(item.name.last.toLowerCase().includes(payload) 
+        || item.name.first.toLowerCase().includes(payload) 
+        || item.email.toLowerCase().includes(payload)
+        || item.login.username.toLowerCase().includes(payload)))
       }
     }
     },
@@ -31,7 +34,7 @@ const initialState = {
         },
         [fetchData.fulfilled]: (state,  {payload} ) => {
           state.loading = false
-          state.data = state.data.concat(payload)
+          state.data = payload
         },
         [fetchData.rejected]: state => {
           state.loading = false
