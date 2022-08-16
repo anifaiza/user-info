@@ -7,7 +7,14 @@ import Container from '@material-ui/core/Container';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
 import ReactPaginate from 'react-paginate';
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles, withStyles } from "@material-ui/core/styles"
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 import {
     fetchData,
     dataSelector,
@@ -27,8 +34,34 @@ const useStyles = makeStyles({
     // "&.MuiOutlinedInput-root": {
     //     borderRadius: "15px"
     // }
+  },
+  pagination: {
+    width: "50%",
+    display: "flex",
+    flexDirection: "row",
+    listStyle: "none",
+    float: "right",
+  },
+  paginationLink: {
+    margin: "0 auto"
+  },
+  image: {
+    height: "50px",
+    width: "50px",
+    borderRadius: "50%",
   }
+
 })
+
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+      backgroundColor: theme.palette.grey[300],
+      color: theme.palette.common.black,
+    },
+    body: {
+      fontSize: 14,
+    },
+  }))(TableCell);
 
 const SearchFilterContainer = styled.div`
     display: flex;
@@ -65,7 +98,7 @@ const UserInfo = () => {
     const [tileView, setTileView] = useState(false)
     const[filter, setFilter] = useState('all')
     const [searching, setSearching] = useState(false)
-    const [currentItems, setCurrentItems] = useState(null);
+    const [currentItems, setCurrentItems] = useState([]);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
 
@@ -90,6 +123,7 @@ const UserInfo = () => {
 
     const handleViewChange = () => {
         setTileView(!tileView)
+        console.log("tileview", tileView)
     }
 
     const handlePageClick = (event) => {
@@ -149,7 +183,7 @@ const UserInfo = () => {
         <SwitchContainer>
             <p style={{padding: 0, margin: "auto 0"}}>TileView</p>
             <Switch
-                checked={tileView}
+                // checked={tileView}
                 onChange={handleViewChange}
                 color="primary"
                 name="checkedB"
@@ -160,26 +194,63 @@ const UserInfo = () => {
         { tileView && (
             <div>
                 <TileContainer>
-                {currentItems.map((item,i) =>(
-                    <TileCard key={i} data ={item.name.last}/>
+                {currentItems && currentItems.map((item,i) =>(
+                    <TileCard key={i} data ={item}/>
                 ))}
                 </TileContainer>
-                    <ReactPaginate
+                <ReactPaginate
                     breakLabel="..."
-                    nextLabel="next >"
+                    nextLabel=">>"
                     onPageChange={(e)=>handlePageClick(e)}
                     pageRangeDisplayed={5}
                     pageCount={pageCount}
-                    previousLabel="< previous"
+                    previousLabel="<<"
                     renderOnZeroPageCount={null}
-            />
+                    className={classes.pagination}
+                    pageClassName={classes.paginationLink}
+                />
             </div>
         )}
         {!tileView && (
-            (<div>
-                <h1>not tile view</h1>
+            <div style = {{marginTop: "50px"}}>
+                <TableContainer component={Paper}>
+                <Table className={classes.table} aria-label="customized table">
+                  <TableHead>
+                    <TableRow>
+                    <StyledTableCell>{''}</StyledTableCell>
+                      <StyledTableCell>Name</StyledTableCell>
+                      <StyledTableCell align="left">Registration Date</StyledTableCell>
+                      <StyledTableCell align="left">UserName</StyledTableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                  {currentItems && currentItems.map((item, i) =>(
+                    <TableRow key={i}>
+                        <StyledTableCell component="th" scope="row">
+                          <img src={item.picture.thumbnail} className={classes.image}/>
+                        </StyledTableCell>
+                        <StyledTableCell component="th" scope="row">
+                          {item.name.last}
+                        </StyledTableCell>
+                        <StyledTableCell align="left">{item.registered.date.split("T")[0]}</StyledTableCell>
+                        <StyledTableCell align="left">{item.login.username}</StyledTableCell>
+                    </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+             </TableContainer>
+             <ReactPaginate
+                breakLabel="..."
+                nextLabel=">>"
+                onPageChange={(e)=>handlePageClick(e)}
+                pageRangeDisplayed={5}
+                pageCount={pageCount}
+                previousLabel="<<"
+                renderOnZeroPageCount={null}
+                className={classes.pagination}
+                pageClassName={classes.paginationLink}
+            />
             </div>
-            )
         )}
         
 
