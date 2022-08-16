@@ -6,6 +6,7 @@ import Switch from '@material-ui/core/Switch';
 import Container from '@material-ui/core/Container';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
+import ReactPaginate from 'react-paginate';
 import { makeStyles } from "@material-ui/core/styles"
 import {
     fetchData,
@@ -62,15 +63,16 @@ const UserInfo = () => {
     const dispatch = useDispatch()
     const { data, searchedData, filteredData, loading, hasErrors } = useSelector(dataSelector)
     const [tileView, setTileView] = useState(false)
-    const [text, setText] = useState('')
     const[filter, setFilter] = useState('all')
     const [searching, setSearching] = useState(false)
+    const [currentItems, setCurrentItems] = useState(null);
+    const [pageCount, setPageCount] = useState(0);
+    const [itemOffset, setItemOffset] = useState(0);
 
     const onTextChange = (e) => {
-        setText(e.target.value);
         setSearching(true);
         dispatch(searchByName(e.target.value));
-        if(e.target.value==''){
+        if(e.target.value===''){
             setSearching(false)
         }
     }
@@ -89,10 +91,34 @@ const UserInfo = () => {
     const handleViewChange = () => {
         setTileView(!tileView)
     }
+
+    const handlePageClick = (event) => {
+        const newOffset = (event.selected * 10) % data.length;
+        console.log(
+        `User requested page number ${event.selected}, which is offset ${newOffset}`
+        );
+        setItemOffset(newOffset);
+    }
     
     useEffect(() => {
         dispatch(fetchData())
     }, [dispatch])
+
+    useEffect(()=>{
+        const endOffset = itemOffset + 10;
+        console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+        if(searching && filter==="all" && searchedData.length>0){
+            setCurrentItems(searchedData.slice(itemOffset, endOffset));
+        }else if(searching && filter!=="all" && filteredData.length>0){
+            setCurrentItems(filteredData.slice(itemOffset, endOffset));
+        }else if(!searching && filter==='all'){
+            setCurrentItems(data.slice(itemOffset, endOffset))
+        }else if(!searching && filter!=='all'){
+            setCurrentItems(searchedData.slice(itemOffset, endOffset))
+        }
+        // setCurrentItems(data.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(data.length / 10));
+    }, [itemOffset, data, searchedData, filteredData])
 
    if(!loading){
     console.log("data", data)
@@ -131,30 +157,31 @@ const UserInfo = () => {
             />
         </SwitchContainer>
         </SearchFilterContainer>
-        {tileView && (
-        <div>
-            {searching && filter=="all" && searchedData.length>0 && (
-            <TileContainer>
-                {searchedData.map(item =>(
-                    <TileCard data ={item.name.last}/>
+        { tileView && (
+            <div>
+                <TileContainer>
+                {currentItems.map((item,i) =>(
+                    <TileCard key={i} data ={item.name.last}/>
                 ))}
-            </TileContainer>
-            )}
-            {searching && filter!=="all" && filteredData.length>0 && (
-                <TileContainer>
-                    {filteredData.map(item =>(
-                        <TileCard data ={item.name.last}/>
-                    ))}
                 </TileContainer>
-            )}
-            {!searching && filter=='all' && data.length>0 && (
-                <TileContainer>
-                    {data.map(item =>( 
-                        <TileCard data ={item.name.last}/>
-                    ))}
-                </TileContainer>
-            )}
-        </div>)}
+                    <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="next >"
+                    onPageChange={(e)=>handlePageClick(e)}
+                    pageRangeDisplayed={5}
+                    pageCount={pageCount}
+                    previousLabel="< previous"
+                    renderOnZeroPageCount={null}
+            />
+            </div>
+        )}
+        {!tileView && (
+            (<div>
+                <h1>not tile view</h1>
+            </div>
+            )
+        )}
+        
 
         {/* {!searching && data.length>0 && !tileView &&(
             <div>

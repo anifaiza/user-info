@@ -12,7 +12,7 @@ const useStyles = makeStyles({
 
 function TileCard( data ) {
 const classes = useStyles()
-// console.log(data)
+// console.log("card data",data.data)
   return (
     <Card variant="outlined" className={classes.card}>
         <h3>{data.data}</h3>
