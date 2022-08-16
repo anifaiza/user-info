@@ -21,47 +21,50 @@ import {
     searchByName,
     filterData,
     filterSearchedData
-  } from "../../Slices/ApiSlice"
+} from "../../Slices/ApiSlice"
 
 const useStyles = makeStyles({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  textfield: {
-    height: "20px",
-    width: "350px",
-    // "&.MuiOutlinedInput-root": {
-    //     borderRadius: "15px"
-    // }
-  },
-  pagination: {
-    width: "50%",
-    display: "flex",
-    flexDirection: "row",
-    listStyle: "none",
-    float: "right",
-  },
-  paginationLink: {
-    margin: "0 auto"
-  },
-  image: {
-    height: "50px",
-    width: "50px",
-    borderRadius: "50%",
-  }
+    container: {
+        display: "flex",
+        flexDirection: "column",
+    },
+    textfield: {
+        height: "20px",
+        width: "350px",
+        // "&.MuiOutlinedInput-root": {
+        //     borderRadius: "15px"
+        // }
+    },
+    pagination: {
+        width: "50%",
+        display: "flex",
+        flexDirection: "row",
+        listStyle: "none",
+        float: "right",
+    },
+    paginationLink: {
+        margin: "0 auto"
+    },
+    image: {
+        height: "50px",
+        width: "50px",
+        borderRadius: "50%",
+    },
+    table: {
+        height: "300px"
+    }
 
 })
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
-      backgroundColor: theme.palette.grey[300],
-      color: theme.palette.common.black,
+        backgroundColor: theme.palette.grey[300],
+        color: theme.palette.common.black,
     },
     body: {
-      fontSize: 14,
+        fontSize: 14,
     },
-  }))(TableCell);
+}))(TableCell);
 
 const SearchFilterContainer = styled.div`
     display: flex;
@@ -96,7 +99,7 @@ const UserInfo = () => {
     const dispatch = useDispatch()
     const { data, searchedData, filteredData, loading, hasErrors } = useSelector(dataSelector)
     const [tileView, setTileView] = useState(false)
-    const[filter, setFilter] = useState('all')
+    const [filter, setFilter] = useState('all')
     const [searching, setSearching] = useState(false)
     const [currentItems, setCurrentItems] = useState([]);
     const [pageCount, setPageCount] = useState(0);
@@ -104,8 +107,8 @@ const UserInfo = () => {
 
     const onTextChange = (e) => {
         setSearching(true);
-        dispatch(searchByName(e.target.value));
-        if(e.target.value===''){
+        dispatch(searchByName(e.target.value.toLowerCase()));
+        if (e.target.value === '') {
             setSearching(false)
         }
     }
@@ -113,10 +116,10 @@ const UserInfo = () => {
     const handleFilterChange = (e) => {
         // console.log(e.target.value)
         setFilter(e.target.value)
-        if(searching){
+        if (searching) {
             dispatch(filterSearchedData(e.target.value))
         }
-        if(!searching){
+        if (!searching) {
             dispatch(filterData(e.target.value))
         }
     }
@@ -129,132 +132,133 @@ const UserInfo = () => {
     const handlePageClick = (event) => {
         const newOffset = (event.selected * 10) % data.length;
         console.log(
-        `User requested page number ${event.selected}, which is offset ${newOffset}`
+            `User requested page number ${event.selected}, which is offset ${newOffset}`
         );
         setItemOffset(newOffset);
     }
-    
+
     useEffect(() => {
         dispatch(fetchData())
     }, [dispatch])
 
-    useEffect(()=>{
+    useEffect(() => {
         const endOffset = itemOffset + 10;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        if(searching && filter==="all" && searchedData.length>0){
+        if (searching && filter === "all" && searchedData.length > 0) {
             setCurrentItems(searchedData.slice(itemOffset, endOffset));
-        }else if(searching && filter!=="all" && filteredData.length>0){
+        } else if (searching && filter !== "all" && filteredData.length > 0) {
             setCurrentItems(filteredData.slice(itemOffset, endOffset));
-        }else if(!searching && filter==='all'){
+        } else if (!searching && filter === 'all' && data.length > 0) {
             setCurrentItems(data.slice(itemOffset, endOffset))
-        }else if(!searching && filter!=='all'){
+        } else if (!searching && filter !== 'all' && searchedData.length > 0) {
             setCurrentItems(searchedData.slice(itemOffset, endOffset))
         }
         // setCurrentItems(data.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(data.length / 10));
     }, [itemOffset, data, searchedData, filteredData])
 
-   if(!loading){
-    console.log("data", data)
-    console.log("searched", searchedData)
-    console.log("filtered", filteredData)
-   }
+    if (!loading) {
+        console.log("data", data)
+        console.log("searched", searchedData)
+        console.log("filtered", filteredData)
+        console.log("current", currentItems)
+    }
     return (
-    <Container maxWidth='lg' className={classes.container}>
-        <h1>User List</h1>
-        <SearchFilterContainer>
-        <TextField 
-        id="outlined-size-small" 
-        variant="outlined" 
-        size="small" 
-        placeholder='Search...' 
-        className={classes.textfield}
-        onChange={(e)=>{onTextChange(e)}}
-        />
-            <FilterContainer onChange={(e)=>handleFilterChange(e)}>
-            <p style={{padding: 0, margin: "auto 0"}}>Filter</p>
-            <input type="radio" id="all" name="filter" value="all"/>
-            <Label for="all">All</Label><br/>
-            <input type="radio" id="male" name="filter" value="male"/>
-            <Label for="male">Male</Label><br/>
-            <input type="radio" id="Female" name="filter" value="female"/>
-            <Label for="Female">Female</Label>
-        </FilterContainer>
-        <SwitchContainer>
-            <p style={{padding: 0, margin: "auto 0"}}>TileView</p>
-            <Switch
-                // checked={tileView}
-                onChange={handleViewChange}
-                color="primary"
-                name="checkedB"
-                inputProps={{ 'aria-label': 'primary checkbox' }}
-            />
-        </SwitchContainer>
-        </SearchFilterContainer>
-        { tileView && (
-            <div>
-                <TileContainer>
-                {currentItems && currentItems.map((item,i) =>(
-                    <TileCard key={i} data ={item}/>
-                ))}
-                </TileContainer>
-                <ReactPaginate
-                    breakLabel="..."
-                    nextLabel=">>"
-                    onPageChange={(e)=>handlePageClick(e)}
-                    pageRangeDisplayed={5}
-                    pageCount={pageCount}
-                    previousLabel="<<"
-                    renderOnZeroPageCount={null}
-                    className={classes.pagination}
-                    pageClassName={classes.paginationLink}
+        <Container maxWidth='lg' className={classes.container}>
+            <h1>User List</h1>
+            <SearchFilterContainer>
+                <TextField
+                    id="outlined-size-small"
+                    variant="outlined"
+                    size="small"
+                    placeholder='Search...'
+                    className={classes.textfield}
+                    onChange={(e) => { onTextChange(e) }}
                 />
-            </div>
-        )}
-        {!tileView && (
-            <div style = {{marginTop: "50px"}}>
-                <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="customized table">
-                  <TableHead>
-                    <TableRow>
-                    <StyledTableCell>{''}</StyledTableCell>
-                      <StyledTableCell>Name</StyledTableCell>
-                      <StyledTableCell align="left">Registration Date</StyledTableCell>
-                      <StyledTableCell align="left">UserName</StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                  {currentItems && currentItems.map((item, i) =>(
-                    <TableRow key={i}>
-                        <StyledTableCell component="th" scope="row">
-                          <img src={item.picture.thumbnail} className={classes.image}/>
-                        </StyledTableCell>
-                        <StyledTableCell component="th" scope="row">
-                          {item.name.last}
-                        </StyledTableCell>
-                        <StyledTableCell align="left">{item.registered.date.split("T")[0]}</StyledTableCell>
-                        <StyledTableCell align="left">{item.login.username}</StyledTableCell>
-                    </TableRow>
-                    ))}
-                    </TableBody>
-                </Table>
-             </TableContainer>
-             <ReactPaginate
-                breakLabel="..."
-                nextLabel=">>"
-                onPageChange={(e)=>handlePageClick(e)}
-                pageRangeDisplayed={5}
-                pageCount={pageCount}
-                previousLabel="<<"
-                renderOnZeroPageCount={null}
-                className={classes.pagination}
-                pageClassName={classes.paginationLink}
-            />
-            </div>
-        )}
-        
+                <FilterContainer onChange={(e) => handleFilterChange(e)}>
+                    <p style={{ padding: 0, margin: "auto 0" }}>Filter</p>
+                    <input type="radio" id="all" name="filter" value="all" />
+                    <Label for="all">All</Label><br />
+                    <input type="radio" id="male" name="filter" value="male" />
+                    <Label for="male">Male</Label><br />
+                    <input type="radio" id="Female" name="filter" value="female" />
+                    <Label for="Female">Female</Label>
+                </FilterContainer>
+                <SwitchContainer>
+                    <p style={{ padding: 0, margin: "auto 0" }}>TileView</p>
+                    <Switch
+                        // checked={tileView}
+                        onChange={handleViewChange}
+                        color="primary"
+                        name="checkedB"
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                    />
+                </SwitchContainer>
+            </SearchFilterContainer>
+            {tileView && (
+                <div>
+                    <TileContainer>
+                        {currentItems && currentItems.map((item, i) => (
+                            <TileCard key={i} data={item} />
+                        ))}
+                    </TileContainer>
+                    <ReactPaginate
+                        breakLabel="..."
+                        nextLabel=">>"
+                        onPageChange={(e) => handlePageClick(e)}
+                        pageRangeDisplayed={5}
+                        pageCount={pageCount}
+                        previousLabel="<<"
+                        renderOnZeroPageCount={null}
+                        className={classes.pagination}
+                        pageClassName={classes.paginationLink}
+                    />
+                </div>
+            )}
+            {!tileView && (
+                <div style={{ marginTop: "50px" }}>
+                    <TableContainer component={Paper} >
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>{''}</StyledTableCell>
+                                    <StyledTableCell>Name</StyledTableCell>
+                                    <StyledTableCell align="left">Registration Date</StyledTableCell>
+                                    <StyledTableCell align="left">UserName</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {currentItems && currentItems.map((item, i) => (
+                                    <TableRow key={i}>
+                                        <StyledTableCell component="th" scope="row">
+                                            <img src={item.picture.thumbnail} className={classes.image} />
+                                        </StyledTableCell>
+                                        <StyledTableCell component="th" scope="row">
+                                            {item.name.last}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="left">{item.registered.date.split("T")[0]}</StyledTableCell>
+                                        <StyledTableCell align="left">{item.login.username}</StyledTableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <ReactPaginate
+                        breakLabel="..."
+                        nextLabel=">>"
+                        onPageChange={(e) => handlePageClick(e)}
+                        pageRangeDisplayed={5}
+                        pageCount={pageCount}
+                        previousLabel="<<"
+                        renderOnZeroPageCount={null}
+                        className={classes.pagination}
+                        pageClassName={classes.paginationLink}
+                    />
+                </div>
+            )}
 
-        {/* {!searching && data.length>0 && !tileView &&(
+
+            {/* {!searching && data.length>0 && !tileView &&(
             <div>
                 {data.map(item =>(
                     <TileCard data ={item.name.last}/>
@@ -262,7 +266,7 @@ const UserInfo = () => {
                 ))}
             </div>
         )} */}
-    </Container>
+        </Container>
     )
 }
 
