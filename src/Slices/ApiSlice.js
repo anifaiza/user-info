@@ -9,7 +9,6 @@ const initialState = {
 }
 
 export const fetchData = createAsyncThunk("api/fechData", async () => {
-    // let data;
     const response = await fetch("https://randomuser.me/api/?results=50"
     )
     const data = await response.json()

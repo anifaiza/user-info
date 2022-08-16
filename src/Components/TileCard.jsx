@@ -39,24 +39,23 @@ const useStyles = makeStyles({
     fontSize: "12px",
     margin: "2px"
   },
-  icon:{
+  icon: {
     height: "15px",
     width: "15px"
   }
 })
 
-function TileCard( data ) {
-const classes = useStyles()
-// console.log("card data",data.data)
+function TileCard(data) {
+  const classes = useStyles()
   return (
     <Card variant="outlined" className={classes.card}>
-        <img src={data.data.picture.thumbnail} className={classes.image}/>
-        <div className={classes.info}>
-            <p className={classes.name}> {data.data.name.last} {data.data.name.first}</p >
-            <p className={classes.email}> {data.data.email} </p >
-            <p className={classes.username}> <PersonIcon className={classes.icon}/> {data.data.login.username}</p>
-            <p className={classes.username}> <EventNoteIcon className={classes.icon} /> {data.data.registered.date.split("T")[0]}</p>
-        </div>
+      <img src={data.data.picture.thumbnail} className={classes.image} />
+      <div className={classes.info}>
+        <p className={classes.name}> {data.data.name.last} {data.data.name.first}</p >
+        <p className={classes.email}> {data.data.email} </p >
+        <p className={classes.username}> <PersonIcon className={classes.icon} /> {data.data.login.username}</p>
+        <p className={classes.username}> <EventNoteIcon className={classes.icon} /> {data.data.registered.date.split("T")[0]}</p>
+      </div>
     </Card>
   )
 }

@@ -118,7 +118,6 @@ const UserInfo = () => {
     }
 
     const handleFilterChange = (e) => {
-        // console.log(e.target.value)
         setFilter(e.target.value)
         if (searching) {
             dispatch(filterSearchedData(e.target.value))
@@ -130,14 +129,10 @@ const UserInfo = () => {
 
     const handleViewChange = () => {
         setTileView(!tileView)
-        console.log("tileview", tileView)
     }
 
     const handlePageClick = (event) => {
         const newOffset = (event.selected * 10) % data.length;
-        console.log(
-            `User requested page number ${event.selected}, which is offset ${newOffset}`
-        );
         setItemOffset(newOffset);
     }
 
@@ -147,7 +142,6 @@ const UserInfo = () => {
 
     useEffect(() => {
         const endOffset = itemOffset + 10;
-        console.log(`Loading items from ${itemOffset} to ${endOffset}`);
         if (searching && filter === "all" && searchedData.length > 0) {
             setCurrentItems(searchedData.slice(itemOffset, endOffset));
         } else if (searching && filter !== "all") {
@@ -166,11 +160,6 @@ const UserInfo = () => {
         setPageCount(Math.ceil(data.length / 10));
     }, [itemOffset, data, searchedData, filteredData])
 
-    if (!loading) {
-        console.log("data", data)
-        console.log("searched", searchedData)
-        console.log("filtered", filteredData)
-    }
     return (
         <Container maxWidth='lg' className={classes.container}>
             <h1>User List</h1>
@@ -266,16 +255,6 @@ const UserInfo = () => {
                     />
                 </div>
             )}
-
-
-            {/* {!searching && data.length>0 && !tileView &&(
-            <div>
-                {data.map(item =>(
-                    <TileCard data ={item.name.last}/>
-                    // <h1>{item.name.last}</h1>
-                ))}
-            </div>
-        )} */}
         </Container>
     )
 }
