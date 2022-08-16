@@ -146,11 +146,16 @@ const UserInfo = () => {
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
         if (searching && filter === "all" && searchedData.length > 0) {
             setCurrentItems(searchedData.slice(itemOffset, endOffset));
-        } else if (searching && filter !== "all" && filteredData.length > 0) {
-            setCurrentItems(filteredData.slice(itemOffset, endOffset));
-        } else if (!searching && filter === 'all' && data.length > 0) {
+        } else if (searching && filter !== "all") {
+            if (filteredData.length !== 0 && filteredData.length < searchedData.length) {
+                setCurrentItems(filteredData.slice(itemOffset, endOffset));
+            }
+            else {
+                setCurrentItems(searchedData.slice(itemOffset, endOffset))
+            }
+        } else if (!searching && filter === 'all') {
             setCurrentItems(data.slice(itemOffset, endOffset))
-        } else if (!searching && filter !== 'all' && searchedData.length > 0) {
+        } else if (!searching && filter !== 'all') {
             setCurrentItems(searchedData.slice(itemOffset, endOffset))
         }
         // setCurrentItems(data.slice(itemOffset, endOffset));
@@ -161,7 +166,6 @@ const UserInfo = () => {
         console.log("data", data)
         console.log("searched", searchedData)
         console.log("filtered", filteredData)
-        console.log("current", currentItems)
     }
     return (
         <Container maxWidth='lg' className={classes.container}>

@@ -46,14 +46,6 @@ export const apiSlice = createSlice({
                 state.filteredData = state.searchedData.filter(i => i.gender === 'female')
             }
         },
-        searchAndFilterData: (state, { payload }) => {
-            if (payload !== "") {
-                state.searchedData = state.data.filter(item => (item.name.last.toLowerCase().includes(payload.search)
-                    || item.name.first.toLowerCase().includes(payload.search)
-                    || item.email.toLowerCase().includes(payload.search)
-                    || item.login.username.toLowerCase().includes(payload.search)) && (payload.gender === 'all' ? true : item.gender === payload.gender))
-            }
-        }
     },
     extraReducers: {
         [fetchData.pending]: state => {
