@@ -43,7 +43,8 @@ const useStyles = makeStyles({
         float: "right",
     },
     paginationLink: {
-        margin: "0 auto"
+        margin: "0 auto",
+        cursor: "pointer,"
     },
     image: {
         height: "50px",
@@ -52,6 +53,9 @@ const useStyles = makeStyles({
     },
     table: {
         height: "300px"
+    },
+    active: {
+        borderTop: "2px solid blue"
     }
 
 })
@@ -216,6 +220,7 @@ const UserInfo = () => {
                         renderOnZeroPageCount={null}
                         className={classes.pagination}
                         pageClassName={classes.paginationLink}
+                        activeLinkClassName={classes.active}
                     />
                 </div>
             )}
@@ -257,6 +262,7 @@ const UserInfo = () => {
                         renderOnZeroPageCount={null}
                         className={classes.pagination}
                         pageClassName={classes.paginationLink}
+                        activeLinkClassName={classes.active}
                     />
                 </div>
             )}
