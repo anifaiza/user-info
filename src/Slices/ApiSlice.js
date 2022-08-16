@@ -5,6 +5,7 @@ const initialState = {
     hasErrors: false,
     data: [],
     searchedData: [],
+    filteredData: [],
   }
 
   export const fetchData = createAsyncThunk("api/fechData", async () => {
@@ -19,14 +20,32 @@ const initialState = {
     name: "UserData",
   initialState,
   reducers: {
-    searchByName: (state, { payload }) => {
-      if (payload !== "") {
-        state.searchedData = state.data.filter(item=>(item.name.last.toLowerCase().includes(payload) 
-        || item.name.first.toLowerCase().includes(payload) 
-        || item.email.toLowerCase().includes(payload)
-        || item.login.username.toLowerCase().includes(payload)))
+    searchByName: (state, action) => {
+      if (action.payload !== "") {
+        state.searchedData = state.data.filter(item=>(item.name.last.toLowerCase().includes(action.payload) 
+        || item.name.first.toLowerCase().includes(action.payload) 
+        || item.email.toLowerCase().includes(action.payload)
+        || item.login.username.toLowerCase().includes(action.payload)))
       }
-    }
+    },
+    filterData: (state, { payload }) => {
+        if (payload === 'all') {
+          state.searchedData = state.data
+        } else if (payload === 'male') {
+          state.searchedData = state.data.filter(i => i.gender === 'male')
+        }else if (payload === 'female') {
+            state.searchedData = state.data.filter(i => i.gender === 'female')
+        }
+      },
+    filterSearchedData: (state, { payload }) => {
+        if (payload === 'all') {
+          state.filteredData = state.searchedData
+        } else if (payload === 'male') {
+          state.filteredData = state.searchedData.filter(i => i.gender === 'male')
+        }else if (payload === 'female') {
+            state.filteredData = state.searchedData.filter(i => i.gender === 'female')
+        }
+      },
     },
     extraReducers: {
         [fetchData.pending]: state => {
@@ -47,6 +66,8 @@ const initialState = {
 
   export const {
     searchByName,
+    filterData,
+    filterSearchedData
   } = apiSlice.actions
   
   export default apiSlice.reducer
